@@ -5,8 +5,6 @@ const moment = require("moment")
 const server = http.createServer ((req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/json');
-    // res.write(hello)
-    // res.write(greetings())
     const url = req.url;
     if(url ==='/') {
         res.write('This is the home page')
@@ -14,13 +12,18 @@ const server = http.createServer ((req, res) => {
     else if (url === '/about'){
         res.setHeader('Content-Type', 'text/json');
         res.write(JSON.stringify({
+            
             status: 'success',
             message: 'response success',
+            description: 'Exercise 2',
             date: moment().format()
         }))
     }
     else if (url === '/users'){
-        res.write(data())
+        res.setHeader ("Content-Type", "text/json")
+        res.write(JSON.stringify({
+            data,
+        }))
     }
     else{
         res.statusCode = 404;
