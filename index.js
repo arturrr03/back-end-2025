@@ -13,7 +13,11 @@ app.post('/contoh', (req, res) => res.send('Request method POST'))
 app.put('/contoh', (req, res) => res.send('Request method PUT'))
 app.delete('/contoh', (req, res) => res.send('Request method DELETE'))
 app.patch('/contoh', (req, res) => res.send('Request method PATCH'))
-
+app.all('/universal',function (req, res) {
+    res.send("request dengan method " + req.method)
+});
+// routing menggunakan params
+app.get('/post/:id', (req, res) => res.send(`Artikel ke - ${req.params.id}`))
 
 const hostname = '127.0.0.1';
 const port = 3000;
