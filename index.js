@@ -18,6 +18,11 @@ app.all('/universal',function (req, res) {
 });
 // routing menggunakan params
 app.get('/post/:id', (req, res) => res.send(`Artikel ke - ${req.params.id}`))
+// query string
+app.get('/post', (req, res) => {
+    const{page, sort} = req.query;
+    res.send(`Query string, page : ${page}, sort : ${sort}`)
+})
 
 const hostname = '127.0.0.1';
 const port = 3000;
