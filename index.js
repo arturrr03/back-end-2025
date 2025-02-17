@@ -1,26 +1,32 @@
-const express = require("express");
-const moment = require("moment");
-const users = require("./users");
+const http = require('http');
+const express = require('express')
+const moment = require('moment')
+const app = express()
 
-const app = express();
+app.get('/', (req, res) => res.send('Hello World'))
+app.get('/about', (req, res) => res.status(200).json({
+    status : 'success',
+    message: 'About page',
+    data: []
+}))
+app.post('/contoh', (req, res) => res.send('Request method POST'))
+app.put('/contoh', (req, res) => res.send('Request method PUT'))
+app.delete('/contoh', (req, res) => res.send('Request method DELETE'))
+app.patch('/contoh', (req, res) => res.send('Request method PATCH'))
+app.all('/universal',function (req, res) {
+    res.send("request dengan method " + req.method)
+});
+// routing menggunakan params
+app.get('/post/:id', (req, res) => res.send(`Artikel ke - ${req.params.id}`))
+// query string
+app.get('/post', (req, res) => {
+    const{page, sort} = req.query;
+    res.send(`Query string, page : ${page}, sort : ${sort}`)
+})
+
+const hostname = '127.0.0.1';
 const port = 3000;
-
-app.get("/", (req, res) => {
-  res.status(200).send("This is the home page");
-});
-app.get("/about", (req, res) =>
-  res.status(200).json({
-    status: "success",
-    message: "respone success",
-    description: "Exercise #02",
-    date: moment().format(),
-  })
-);
-
-app.get("/users", (req, res) => {
-  res.status(200).json(users);
-});
-
-app.listen(port, () => {
-  console.log(`Server running at http://127.0.0.1:${port}/`);
+app.listen(port,hostname, ()=>{
+    console.log(`Server running at http://${hostname}:${port}/`);
+    
 });
