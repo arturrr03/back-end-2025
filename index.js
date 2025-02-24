@@ -1,29 +1,29 @@
+const http = require("http");
+const { hello, greetings } = require("./helloWorld");
+const moment = require("moment");
 const express = require("express");
 const morgan = require("morgan");
-const errorHandler = require("errorhandler");
-const users = require("./users")
+// const errorhandler = require("errorhandler");
 const app = express();
-app.get("/users", (req, res) => {
-  res.json(users);
-});
+const routers = require("./routers");
 
-// Middleware untuk logging
+//Middleware
+const log = (req, res, next) => {
+  console.log(
+    moment().format("h:mm:ss a") + " " + req.originalUrl + " " + req.ip
+  );
+  next();
+};
+
 app.use(morgan("tiny"));
+// app.use(errorhandler);
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
 
-// Routing dinamis menggunakan params
-app.get("/users/:name", (req, res) => {
-  const name = req.status.params.name.toLowerCase();
-  const user = users.find((u) => u.name.toLowerCase() === name);
+//Routing
+app.use(routers);
 
-  if (!user){
-      return res.status(404).json({
-        message : "data users tidak ditemukan"
-      })
-  }
-  res.json(user)
-});
-
-// Middleware untuk menangani 404
+//Middleware untuk 404
 app.use((req, res, next) => {
   res.status(404).json({
     status: "error",
@@ -31,18 +31,8 @@ app.use((req, res, next) => {
   });
 });
 
-// Middleware untuk menangani error secara global
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    status: "error",
-    message: "terjadi kesalahan pada server",
-  });
-});
-
 const hostname = "127.0.0.1";
 const port = 3000;
-
-app.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}`);
-});
+app.listen(port, hostname, () =>
+  console.log(`Server running at http://${hostname}:${port}`)
+);
