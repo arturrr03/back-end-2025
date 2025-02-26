@@ -5,8 +5,8 @@ const express = require("express");
 const morgan = require("morgan");
 // const errorhandler = require("errorhandler");
 const app = express();
-const routers = require("./routers");
-
+const routers = require("./routers")
+const path = require("path")
 //Middleware
 const log = (req, res, next) => {
   console.log(
@@ -14,6 +14,7 @@ const log = (req, res, next) => {
   );
   next();
 };
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(morgan("tiny"));
 // app.use(errorhandler);
