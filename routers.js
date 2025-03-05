@@ -1,20 +1,30 @@
 const express = require("express");
 const routers = express.Router();
-const path =require('path')
-// Routing
-// routers.get("/download",(res, req) => {
-//   const filename = "dummy.png";
-//   res.sendFile(__dirname + "/download/" + filename);
-// });
+const path = require("path");
+const fs = require("fs");
+const multer = require("multer");
+const uploud = multer({ dest: "public" });
 
-routers.get("/download",(req, res) => {
-  const filename = "dummy.png";
-  res.download(path.join (__dirname,filename), "valo.png")
-  
+routers.post("/upload", uploud.single("file"), (req, res) => {
+  const file = req.file;
+  if (file) {
+    const target = path.join(__dirname, "public", file.originalname);
+    fs.renameSync(file.path, target);
+    res.send("file berhasil diupload");
+  } else {
+    res.send("file gagal diupload");
+  }
 });
 
-
-
+routers.get("/download", (req, res) => {
+  const filename = "/photo.png";
+  res.download(path.join(__dirname, filename), "photo.png");
+});
+// routers.get("/download", (req, res) => {
+//   const filename = "/photo.png";
+//   res.sendFile(__dirname + filename);
+// });
+// Routing
 routers.post("/login", (req, res) => {
   const { username, password } = req.body;
   res.status(200).json({
