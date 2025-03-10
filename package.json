@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "errorhandler": "^1.5.1",
     "express": "^4.21.2",
     "moment": "^2.30.1",

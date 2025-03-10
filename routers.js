@@ -5,6 +5,7 @@ const fs = require("fs");
 const multer = require("multer");
 const uploud = multer({ dest: "public" });
 
+
 routers.post("/upload", uploud.single("file"), (req, res) => {
   const file = req.file;
   if (file) {
@@ -38,6 +39,13 @@ routers.post("/login", (req, res) => {
 });
 routers.get("/", (req, res) => res.send("Hello World"));
 routers.get("/about", (req, res) =>
+  res.status(200).json({
+    status: "success",
+    message: "About page",
+    data: [],
+  })
+);
+routers.put("/about", (req, res) =>
   res.status(200).json({
     status: "success",
     message: "About page",
