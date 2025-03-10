@@ -4,7 +4,59 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 const uploud = multer({ dest: "public" });
+const users = require("./users");
 
+// Endpoint 1
+routers.get("/users", (req, res) => {
+  res.json(users);
+});
+
+//Endpoint 2
+routers.get("/users/:name", (req, res) => {
+  const name = req.params.name.toLowerCase();
+  const user = users.find((u) => u.name.toLowerCase() === name);
+
+  if (!user) {
+    return res.status(404).json({ message: "Data user tidak ditemukan" });
+  }
+  res.json(user);
+});
+
+// Endpoint 3
+routers.post("/users", (req, res) => {
+  if (Object.keys(req.body).length === 0) {
+    res.json({
+      message: "Masukkan data yang akan diubah",
+    });
+  } else {
+    // nama diubah menjadi titlecase
+    let name = req.params.name.toLowerCase();
+    let firstLetter = name.charAt(0).toUpperCase();
+    name = firstLetter + name.slice(1);
+    users.push({
+      id: Number(req.body.id),
+      name: name,
+    });
+    res.json(users);
+  }
+});
+
+// Endpoint 4
+routers.get("/download", (req, res) => {
+  const filePath = path.join(__dirname, "assets", "dummy.png");
+  res.sendFile(filePath);
+});
+
+// Endpoint 5
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
 
 routers.post("/upload", uploud.single("file"), (req, res) => {
   const file = req.file;
@@ -17,58 +69,44 @@ routers.post("/upload", uploud.single("file"), (req, res) => {
   }
 });
 
-routers.get("/download", (req, res) => {
-  const filename = "/photo.png";
-  res.download(path.join(__dirname, filename), "photo.png");
-});
-// routers.get("/download", (req, res) => {
-//   const filename = "/photo.png";
-//   res.sendFile(__dirname + filename);
-// });
-// Routing
-routers.post("/login", (req, res) => {
-  const { username, password } = req.body;
-  res.status(200).json({
-    status: "success",
-    message: "Login page",
-    data: {
-      username: username,
-      password: password,
-    },
+// Endpoint 6
+routers.put("/users/:name", (req, res) => {
+  if (Object.keys(req.body).length === 0) {
+    res.json({
+      message: "Masukkan data yang akan diubah",
+    });
+  }
+  // nama diubah menjadi titlecase
+  let name = req.params.name.toLowerCase();
+  let firstLetter = name.charAt(0).toUpperCase();
+  name = firstLetter + name.slice(1);
+  // kirim data berdasark nama
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].name === name) {
+      users[i].name = req.body.name;
+      users[i].id = req.body.id;
+
+      res.json(users[i]);
+    }
+  }
+  // kirim pesan apabila data tidak ditemukan
+  res.json({
+    message: "Data user tidak ditemukan",
   });
 });
-routers.get("/", (req, res) => res.send("Hello World"));
-routers.get("/about", (req, res) =>
-  res.status(200).json({
-    status: "success",
-    message: "About page",
-    data: [],
-  })
-);
-routers.put("/about", (req, res) =>
-  res.status(200).json({
-    status: "success",
-    message: "About page",
-    data: [],
-  })
-);
-routers.post("/contoh", (req, res) => res.send("request method POST"));
-routers.put("/contoh", (req, res) => res.send("Request method PUT"));
-routers.delete("/contoh", (req, res) => res.send("Request method DELETE"));
-routers.patch("/contoh", (req, res) => res.send("Request method PATCH"));
 
-routers.all("/universal", (req, res) =>
-  res.send(`Request method ${req.method}`)
-);
-// Routing dinamis
-// 1. Menggunakan params
-routers.get("/post/:id", (req, res) =>
-  res.send(`Artikel ke - ${req.params.id}`)
-);
-// 2. Menggunakan Query String
-routers.get("/post", (req, res) => {
-  const { page, sort } = req.query;
-  res.send(`Query string= page :${page}, sort : ${sort}`);
+// Endpoint 7
+routers.delete("/users/:name", (req, res) => {
+  // nama diubah menjadi titlecase
+  let name = req.params.name.toLowerCase();
+  let firstLetter = name.charAt(0).toUpperCase();
+  name = firstLetter + name.slice(1);
+
+  const itemToDelete = users.find((el) => el.name === name);
+  const index = users.indexOf(itemToDelete);
+
+  users.splice(index, 1);
+  res.json(users);
 });
 
 module.exports = routers;
