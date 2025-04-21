@@ -106,18 +106,24 @@ routers.delete("/users/:id", async (req, res) => {
   }
 });
 //Get orders users
-routers.get("/users-with-orders", async (req, res) => {
+routers.get("/users-with-order", async (req, res) => {
   try {
     const db = client.db("latihan");
     const usersWithOrders = await db.collection("users").aggregate([
       {
         $lookup: {
-          from: "orders", // The collection to join with
+          from: "order", // The collection to join with
           localField: "_id", // The field from the `users` collection
           foreignField: "userId", // The field from the `orders` collection
-          as: "orders", // The name of the resulting array field
+          as: "order", // The name of the resulting array field
         },
+      
       },
+      {
+        $match: {
+          order: { $ne: [] }, // Filter to include only users with orders
+        },
+      }
     ]).toArray();
 
     res.status(200).json({
